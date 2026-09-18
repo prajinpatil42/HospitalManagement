@@ -1,10 +1,7 @@
-
 using HospitalManagement.Data;
-using Microsoft.EntityFrameworkCore;
 using HospitalManagement.Repositories;
 using HospitalManagement.Servicess;
-
-
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +10,9 @@ builder.Configuration.AddJsonFile(
     optional: true,
     reloadOnChange: true);
 
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
-
-// Add services to the container.
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -31,26 +24,14 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddOpenApi();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseDeveloperExceptionPage();
-
-
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    //app.MapOpenApi();
 app.UseSwagger();
-    app.UseSwaggerUI();
-//}
-
-//app.UseHttpsRedirection();
+app.UseSwaggerUI();
 
 app.UseAuthorization();
 
