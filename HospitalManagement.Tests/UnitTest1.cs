@@ -8,6 +8,9 @@ namespace HospitalManagement.Tests;
 
 public class PatientServiceTests
 {
+
+    // Test 1: Existing patient
+    // Verifies that GetByIdAsync returns the patient when the patient exists.
     [Fact]
     public async Task GetByIdAsync_WhenPatientExists_ReturnsPatient()
     {
@@ -42,6 +45,8 @@ public class PatientServiceTests
         Assert.Equal("Prajin", result.FirstName);
     }
 
+    // Test 2: Non-existent patient
+    // Verifies that GetByIdAsync returns null when the patient does not exist.
     [Fact]
     public async Task GetByIdAsync_WhenPatientDoesNotExist_ReturnsNull()
     {

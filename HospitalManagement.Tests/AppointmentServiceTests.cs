@@ -8,6 +8,9 @@ namespace HospitalManagement.Tests;
 
 public class AppointmentServiceTests
 {
+
+    // Test 1: Inactive doctor
+    // Verifies that an appointment cannot be created for an inactive doctor.
     [Fact]
     public async Task CreateAsync_WhenDoctorIsInactive_ThrowsException()
     {
@@ -56,6 +59,8 @@ public class AppointmentServiceTests
         Assert.Equal("Doctor is not active.", exception.Message);
     }
 
+    // Test 2: Invalid appointment time
+    // Verifies that the appointment is rejected when the start time is after the end time.
     [Fact]
     public async Task CreateAsync_WhenStartTimeIsAfterEndTime_ThrowsException()
     {
@@ -106,7 +111,8 @@ public class AppointmentServiceTests
             exception.Message);
     }
 
-
+    // Test 3: Doctor appointment conflict
+    // Verifies that an appointment cannot be created when the doctor is already booked.
     [Fact]
     public async Task CreateAsync_WhenDoctorHasOverlap_ThrowsException()
     {
@@ -165,6 +171,8 @@ public class AppointmentServiceTests
             exception.Message);
     }
 
+    // Test 4: Patient appointment conflict
+    // Verifies that a patient cannot have two overlapping appointments.
 
     [Fact]
     public async Task CreateAsync_WhenPatientHasOverlap_ThrowsException()
@@ -232,6 +240,8 @@ public class AppointmentServiceTests
             exception.Message);
     }
 
+    // Test 5: Successful appointment creation
+    // Verifies that an appointment is created successfully when all data is valid.
     [Fact]
     public async Task CreateAsync_WhenDataIsValid_CreatesAppointment()
     {
@@ -309,6 +319,8 @@ public class AppointmentServiceTests
         Assert.Equal("Regular checkup", result.Reason);
     }
 
+    // Test 6: Non-existent patient
+    // Verifies that an appointment cannot be created when the patient does not exist.
     [Fact]
     public async Task CreateAsync_WhenPatientDoesNotExist_ThrowsException()
     {
@@ -343,7 +355,8 @@ public class AppointmentServiceTests
         Assert.Equal("Patient not found.", exception.Message);
     }
 
-
+    // Test 7: Non-existent doctor
+    // Verifies that an appointment cannot be created when the doctor does not exist.
     [Fact]
     public async Task CreateAsync_WhenDoctorDoesNotExist_ThrowsException()
     {
@@ -386,6 +399,9 @@ public class AppointmentServiceTests
         Assert.Equal("Doctor not found.", exception.Message);
     }
 
+
+    // Test 8: Appointment cancellation
+    // Verifies that an existing appointment can be changed from Scheduled to Cancelled.
 
     [Fact]
     public async Task UpdateStatusAsync_WhenAppointmentExists_CancelsAppointment()
