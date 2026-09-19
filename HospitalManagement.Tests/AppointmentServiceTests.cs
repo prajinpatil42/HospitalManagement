@@ -308,4 +308,123 @@ public class AppointmentServiceTests
         Assert.Equal("Scheduled", result.Status);
         Assert.Equal("Regular checkup", result.Reason);
     }
+
+    [Fact]
+    public async Task CreateAsync_WhenPatientDoesNotExist_ThrowsException()
+    {
+        // Arrange
+        var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+        var patientRepositoryMock = new Mock<IPatientRepository>();
+        var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+        patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(1))
+            .ReturnsAsync((Patient?)null);
+
+        var service = new AppointmentService(
+            appointmentRepositoryMock.Object,
+            patientRepositoryMock.Object,
+            doctorRepositoryMock.Object);
+
+        var dto = new CreateAppointmentDto
+        {
+            PatientId = 1,
+            DoctorId = 1,
+            AppointmentDate = new DateTime(2026, 9, 25),
+            StartTime = new TimeSpan(10, 0, 0),
+            EndTime = new TimeSpan(10, 30, 0),
+            Reason = "Test"
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(
+            () => service.CreateAsync(dto));
+
+        Assert.Equal("Patient not found.", exception.Message);
+    }
+
+
+    [Fact]
+    public async Task CreateAsync_WhenDoctorDoesNotExist_ThrowsException()
+    {
+        // Arrange
+        var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+        var patientRepositoryMock = new Mock<IPatientRepository>();
+        var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+        patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(1))
+            .ReturnsAsync(new Patient
+            {
+                Id = 1,
+                PatientNumber = "P001"
+            });
+
+        doctorRepositoryMock
+            .Setup(r => r.GetByIdAsync(1))
+            .ReturnsAsync((Doctor?)null);
+
+        var service = new AppointmentService(
+            appointmentRepositoryMock.Object,
+            patientRepositoryMock.Object,
+            doctorRepositoryMock.Object);
+
+        var dto = new CreateAppointmentDto
+        {
+            PatientId = 1,
+            DoctorId = 1,
+            AppointmentDate = new DateTime(2026, 9, 25),
+            StartTime = new TimeSpan(10, 0, 0),
+            EndTime = new TimeSpan(10, 30, 0),
+            Reason = "Test"
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(
+            () => service.CreateAsync(dto));
+
+        Assert.Equal("Doctor not found.", exception.Message);
+    }
+
+
+    [Fact]
+    public async Task UpdateStatusAsync_WhenAppointmentExists_CancelsAppointment()
+    {
+        // Arrange
+        var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+        var patientRepositoryMock = new Mock<IPatientRepository>();
+        var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+        var appointment = new Appointment
+        {
+            Id = 1,
+            PatientId = 1,
+            DoctorId = 1,
+            AppointmentDate = new DateTime(2026, 9, 25),
+            StartTime = new TimeSpan(10, 0, 0),
+            EndTime = new TimeSpan(10, 30, 0),
+            Status = "Scheduled",
+            Reason = "Regular checkup"
+        };
+
+        appointmentRepositoryMock
+            .Setup(r => r.GetByIdAsync(1))
+            .ReturnsAsync(appointment);
+
+        var service = new AppointmentService(
+            appointmentRepositoryMock.Object,
+            patientRepositoryMock.Object,
+            doctorRepositoryMock.Object);
+
+        // Act
+        var result = await service.UpdateStatusAsync(1, "Cancelled");
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal("Cancelled", appointment.Status);
+
+        appointmentRepositoryMock.Verify(
+            r => r.UpdateAsync(appointment),
+            Times.Once);
+    }
 }
