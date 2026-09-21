@@ -20,7 +20,8 @@ public class CreatePatientDto
     public string Gender { get; set; } = string.Empty;
 
     [Required]
-    [Phone]
+    [RegularExpression(@"^[6-9]\d{9}$",
+        ErrorMessage = "Phone number must be a valid 10-digit Indian mobile number.")]
     public string Phone { get; set; } = string.Empty;
 
     [Required]
